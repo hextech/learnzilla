@@ -23,8 +23,7 @@
 	<job id="readListJob" xmlns="http://www.springframework.org/schema/batch" restartable="false">
 		<step id="springListItemReaderStep">
             <tasklet>
-                <chunk 
-                    reader="springListItemReader"
+                <chunk reader="springListItemReader"
                     processor="lzStatementProcessor"
                     writer="itemWriter"                    
                     commit-interval="5">
