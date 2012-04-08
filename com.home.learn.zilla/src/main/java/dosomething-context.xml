@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<import resource="job-context.xml"/>
+	
+	<job id="readListJob" xmlns="http://www.springframework.org/schema/batch" restartable="false">
+		<step id="springListItemReaderStep">
+            <tasklet>
+                <chunk 
+                    reader="springListItemReader"
+                    processor="lzStatementProcessor"
+                    writer="itemWriter"                    
+                    commit-interval="5">
+                </chunk>
+            </tasklet>
+        </step>
+     </job>
+     
+      <bean id="lzStatementProcessor" class="com.home.learn.zilla.service.spring.batch.dosomething.LzStatementProcessor">
+     	
+     </bean>
+     
+     <bean id="springListItemReader" class="com.home.learn.zilla.service.spring.batch.dosomething.LzStatementItemReader">
+     	<property name="dataSource" ref="oracleDataSource" />
+			<property name="rowMapper">
+				<bean
+					class="com.home.learn.zilla.service.spring.batch.dosomething.CisCodeItemMapper" />
+			</property>
+		<property name="sql" value="select cis_code from lz_account" />
+     </bean>
+     
+     <bean id="itemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
+     	<property name="resource" value="file:target/output.txt" />
+     	<property name="lineAggregator">
+            <bean class="org.springframework.batch.item.file.transform.PassThroughLineAggregator"/>
+        </property>
+     </bean>
+     
+     <bean id="testList" class="com.home.learn.zilla.service.spring.batch.dosomething.TestDataReadFromList">
+     </bean>
+     
+     <bean id="oracleDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@dell-PC:1521:xe" />
+        <property name="username" value="SYSTEM" />
+        <property name="password" value="a" />
+    </bean>
+	
+</beans>
