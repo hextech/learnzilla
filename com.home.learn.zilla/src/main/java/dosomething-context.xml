@@ -23,7 +23,8 @@
 	<job id="readListJob" xmlns="http://www.springframework.org/schema/batch" restartable="false">
 		<step id="springListItemReaderStep">
             <tasklet>
-                <chunk reader="springListItemReader"
+                <chunk 
+                    reader="springListItemReader"
                     processor="lzStatementProcessor"
                     writer="itemWriter"                    
                     commit-interval="5">
@@ -45,11 +46,7 @@
 		<property name="sql" value="select cis_code from lz_account" />
      </bean>
      
-     <bean id="itemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
-     	<property name="resource" value="file:target/output.txt" />
-     	<property name="lineAggregator">
-            <bean class="org.springframework.batch.item.file.transform.PassThroughLineAggregator"/>
-        </property>
+     <bean id="itemWriter" class="com.home.learn.zilla.service.spring.batch.dosomething.LzStatementWriter" scope="step">     	
      </bean>
      
      <bean id="testList" class="com.home.learn.zilla.service.spring.batch.dosomething.TestDataReadFromList">
